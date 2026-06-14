@@ -25,20 +25,42 @@ function addMsg(text, type) {
   chatbox.scrollTop = chatbox.scrollHeight;
 }
 
-function send() {
+async function send() {
   const input = document.getElementById("input");
   const text = input.value.trim();
+
   if (!text) return;
 
   addMsg("You: " + text, "user");
   input.value = "";
 
-  const reply = brain(text);
+  // Show a temporary "thinking" message
+  addMsg("🤖 DadBot: Thinking...", "bot");
 
-  setTimeout(() => {
-    addMsg("🤖 DadBot: " + reply, "bot");
-    speak(reply);
-  }, 400);
+  try {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: text
+      })
+    });
+
+    const data = await response.json();
+
+    // Remove the "Thinking..." message
+    chatbox.removeChild(chatbox.lastChild);
+
+    addMsg("🤖 DadBot: " + data.reply, "bot");
+    speak(data.reply);
+
+  } catch (err) {
+    chatbox.removeChild(chatbox.lastChild);
+    addMsg("🤖 DadBot: Sorry, I couldn't reach the AI.", "bot");
+    console.error(err);
+  }
 }
 
 // =========================

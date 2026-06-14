@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>DadBot Final Boss 🎂</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- 🎬 INTRO -->
+<div id="intro">
+  <h1>🎂 DadBot Final Boss</h1>
+  <p>A birthday AI experience is loading...</p>
+  <button onclick="startApp()">Start Experience 🎉</button>
+</div>
+
+<!-- MAIN APP -->
+<div id="app" style="display:none">
+
+  <h1>🎉 Happy Birthday Dad!</h1>
+
+  <div id="chatbox"></div>
+
+  <div class="input-area">
+    <input id="input" placeholder="Talk to DadBot..." />
+    <button onclick="send()">Send</button>
+    <button onclick="startVoice()">🎤 Speak</button>
+  </div>
+
+  <div class="buttons">
+    <button onclick="quick('joke')">😂 Joke</button>
+    <button onclick="quick('recipe')">🍳 Recipe</button>
+    <button onclick="quick('travel')">🌍 Travel</button>
+    <button onclick="quick('music')">🎵 Music</button>
+    <button onclick="quick('fact')">📚 Fact</button>
+    <button onclick="gift()">🎁 Gift</button>
+  </div>
+
+  <h3>📸 Memories</h3>
+  <div id="gallery"></div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

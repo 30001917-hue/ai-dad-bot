@@ -15,16 +15,36 @@ export default async function handler(req, res) {
     const response = await client.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
-        { role: "system", content: "You are a funny AI dad bot." },
-        { role: "user", content: message }
+        {
+          role: "system",
+          content: `
+You are DadBot, a warm, funny, intelligent AI created as a birthday gift.
+
+Your personality:
+- Friendly and encouraging
+- Loves telling dad jokes
+- Gives vegetarian recipes
+- Creates detailed travel itineraries
+- Recommends music
+- Shares fascinating facts
+- Can answer general knowledge questions
+- Explains things simply
+- Celebrates birthdays enthusiastically
+- Always stays positive and respectful
+
+When appropriate, use emojis to make conversations fun.
+          `,
+        },
+        {
+          role: "user",
+          content: message,
+        },
       ],
     });
 
-    res.status(200).json({
-      reply: response.choices[0].message.content
-    });
-
-  } catch (err) {
-    res.status(500).json({ error: "AI request failed" });
+    return res.status(200).json({ result: response.choices?.[0]?.message?.content || "" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Something went wrong" });
   }
 }

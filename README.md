@@ -1,30 +1,50 @@
-# 🤖 DadBot AI
 
-DadBot AI is a premium AI assistant with voice, chat, and OpenAI integration.  
-It is designed to feel like ChatGPT + Jarvis with a warm, funny personality.
+# 🤖 DadBot AI v3
 
----
+DadBot AI is a premium ChatGPT-style AI assistant with:
 
-## ✨ Features
-
-- 💬 ChatGPT-style interface
-- 🤖 Powered by OpenAI GPT (Responses API)
-- 🎙️ Voice input (speech-to-text)
-- 🔊 Voice output (text-to-speech)
-- 🌙 Dark mode UI
-- 💎 Glassmorphism design
-- 📱 Fully mobile responsive
-- 💾 Chat history saved locally
-- ⌨️ Enter-to-send support
-- 📜 Markdown rendering
-- 📋 Copy-friendly code blocks
-- ⚡ Typing indicator
-- 🧠 Context-aware conversations
+✨ Glassmorphism UI  
+🤖 Groq AI backend (free tier)  
+🎙 Voice input + output  
+💬 Chat memory  
+📱 Mobile responsive design  
+⚡ Fast performance  
 
 ---
 
-## 🚀 Deployment (Vercel)
+## 🚀 Setup
 
 ### 1. Install Vercel CLI
-```bash
-npm install -g vercel
+npm i -g vercel
+
+### 2. Add API key in Vercel
+GROQ_API_KEY=your_key_here
+
+Get key:
+https://console.groq.com/keys
+
+---
+
+### 3. Run locally
+vercel dev
+
+---
+
+### 4. Deploy
+vercel --prod
+
+---
+
+## 💡 Features
+
+- Dad jokes 🤖
+- Travel planner ✈️
+- Recipes 🍝
+- Music recommendations 🎵
+- Fitness advice 🏃
+- Tech explanations 💻
+- Voice assistant 🎙
+
+---
+
+## ❤️ Built as a gift project

@@ -71,7 +71,14 @@ export default async function handler(req, res) {
       data?.choices?.[0]?.message?.content ||
       "No response";
 
-    return res.status(200).json({ reply });
+    // finish_reason "length" means the token budget ran out mid-sentence.
+    // Surfaced so truncation is diagnosable instead of silent; the frontend
+    // ignores these extra fields.
+    return res.status(200).json({
+      reply,
+      finish_reason: data?.choices?.[0]?.finish_reason,
+      usage: data?.usage
+    });
 
   } catch (err) {
     console.error("DadBot API Error:", err);

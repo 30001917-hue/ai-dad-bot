@@ -1,47 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<title>DadBot Final Boss 🎂</title>
-<link rel="stylesheet" href="style.css">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DadBot AI</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Markdown Highlighting -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Highlight.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+
 </head>
 
 <body>
 
-<!-- 🎬 INTRO -->
-<div id="intro">
-  <h1>🎂 DadBot Final Boss</h1>
-  <p>A birthday AI experience is loading...</p>
-  <button onclick="startApp()">Start Experience 🎉</button>
-</div>
+    <!-- Animated Background -->
+    <div class="background">
+        <div class="orb orb1"></div>
+        <div class="orb orb2"></div>
+        <div class="orb orb3"></div>
+        <div class="grid"></div>
+    </div>
 
-<!-- MAIN APP -->
-<div id="app" style="display:none">
+    <!-- Main App -->
+    <div class="app">
 
-  <h1>🎉 Happy Birthday Dad!</h1>
+        <!-- Header -->
+        <header>
 
-  <div id="chatbox"></div>
+            <div class="logo">
 
-  <div class="input-area">
-    <input id="input" placeholder="Talk to DadBot..." />
-    <button onclick="send()">Send</button>
-    <button onclick="startVoice()">🎤 Speak</button>
-  </div>
+                <div class="logo-circle">
+                    🤖
+                </div>
 
-  <div class="buttons">
-    <button onclick="quick('joke')">😂 Joke</button>
-    <button onclick="quick('recipe')">🍳 Recipe</button>
-    <button onclick="quick('travel')">🌍 Travel</button>
-    <button onclick="quick('music')">🎵 Music</button>
-    <button onclick="quick('fact')">📚 Fact</button>
-    <button onclick="gift()">🎁 Gift</button>
-  </div>
+                <div>
 
-  <h3>📸 Memories</h3>
-  <div id="gallery"></div>
+                    <h2>DadBot AI</h2>
 
-</div>
+                    <span>Your Premium AI Assistant</span>
 
-<script src="app.js"></script>
+                </div>
+
+            </div>
+
+            <div class="header-buttons">
+
+                <button id="themeBtn" title="Theme">
+                    🌙
+                </button>
+
+                <button id="clearBtn" title="Clear Chat">
+                    🗑
+                </button>
+
+            </div>
+
+        </header>
+
+        <!-- Welcome -->
+        <section class="welcome">
+
+            <h1>Meet DadBot AI</h1>
+
+            <p>
+
+                Your warm, funny, intelligent AI companion.
+
+                <br><br>
+
+                Dad jokes • Recipes • Travel • Books • Music • Technology • Fitness • Everyday Life
+
+            </p>
+
+            <button id="startBtn" class="primary">
+                ✨ Start Experience
+            </button>
+
+        </section>
+
+        <!-- Chat -->
+        <main id="chat"></main>
+
+        <!-- Typing -->
+        <div id="typing" class="typing hidden">
+
+            <div class="typingBubble"></div>
+            <div class="typingBubble"></div>
+            <div class="typingBubble"></div>
+
+            <span>DadBot is thinking...</span>
+
+        </div>
+
+        <!-- Composer -->
+        <footer>
+
+            <button id="voiceBtn" title="Voice">
+                🎤
+            </button>
+
+            <textarea
+                id="prompt"
+                rows="1"
+                placeholder="Ask DadBot anything..."
+            ></textarea>
+
+            <button id="send">
+                ➤
+            </button>
+
+        </footer>
+
+    </div>
+
+    <!-- App -->
+    <script src="app.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            if (window.hljs) {
+                hljs.highlightAll();
+            }
+        });
+    </script>
+
 </body>
+
 </html>

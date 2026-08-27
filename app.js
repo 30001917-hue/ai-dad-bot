@@ -1,186 +1,101 @@
-const chatbox = document.getElementById("chatbox");
+const chat = document.getElementById("chat");
+const prompt = document.getElementById("prompt");
+const send = document.getElementById("send");
+const startBtn = document.getElementById("startBtn");
+const welcome = document.getElementById("welcome");
+const typing = document.getElementById("typing");
+const clearBtn = document.getElementById("clearBtn");
+const voiceBtn = document.getElementById("voiceBtn");
 
-// =========================
-// 🎬 START APP
-// =========================
-function startApp() {
-  document.getElementById("intro").style.display = "none";
-  document.getElementById("app").style.display = "block";
+let messages = [];
 
-  addMsg("🤖 DadBot: Welcome Dad 🎉 This is your Final Boss Birthday Experience!", "bot");
+/* ---------------- START BUTTON FIX ---------------- */
+if (startBtn) {
+  startBtn.addEventListener("click", () => {
+    if (welcome) welcome.style.display = "none";
+    if (chat) chat.style.display = "block";
+    if (document.querySelector("footer")) {
+      document.querySelector("footer").style.display = "flex";
+    }
 
-  launchBalloons();
-  launchConfetti();
-  loadGallery();
+    addMessage("👋 DadBot is online!", "bot");
+  });
 }
 
-// =========================
-// 💬 CHAT SYSTEM
-// =========================
-function addMsg(text, type) {
-  const div = document.createElement("div");
-  div.className = type;
-  div.innerText = text;
-  chatbox.appendChild(div);
-  chatbox.scrollTop = chatbox.scrollHeight;
-}
-
-async function send() {
-  const input = document.getElementById("input");
-  const text = input.value.trim();
-
-  if (!text) return;
-
-  addMsg("You: " + text, "user");
-  input.value = "";
-
-  // Show a temporary "thinking" message
-  addMsg("🤖 DadBot: Thinking...", "bot");
-
-  try {
-    const response = await fetch("/api/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        message: text
-      })
-    });
-
-    const data = await response.json();
-
-    // Remove the "Thinking..." message
-    chatbox.removeChild(chatbox.lastChild);
-
-    addMsg("🤖 DadBot: " + data.reply, "bot");
-    speak(data.reply);
-
-  } catch (err) {
-    chatbox.removeChild(chatbox.lastChild);
-    addMsg("🤖 DadBot: Sorry, I couldn't reach the AI.", "bot");
-    console.error(err);
-  }
-}
-
-// =========================
-// ⚡ QUICK ACTIONS
-// =========================
-function quick(type) {
-  addMsg("You clicked: " + type, "user");
-
-  setTimeout(() => {
-    const reply = brain(type);
-    addMsg("🤖 DadBot: " + reply, "bot");
-    speak(reply);
-  }, 400);
-}
-
-// =========================
-// 🧠 FINAL BOSS BRAIN
-// =========================
-function brain(input) {
-  input = input.toLowerCase();
-
-  if (input.includes("birthday")) {
-    launchConfetti();
-    launchBalloons();
-    return "🎂 HAPPY BIRTHDAY!! You are loved, appreciated, and absolutely amazing ❤️";
-  }
-
-  if (input.includes("joke")) {
-    return "😂 Why did the dad sit on the clock? He wanted to be on time!";
-  }
-
-  if (input.includes("recipe")) {
-    return "🍳 Try Paneer Butter Masala, Veg Biryani, Pasta Alfredo, or Veg Wraps!";
-  }
-
-  if (input.includes("travel")) {
-    return "🌍 Japan 🇯🇵, Italy 🇮🇹, Switzerland 🇨🇭, and NYC 🇺🇸 are amazing trips!";
-  }
-
-  if (input.includes("music")) {
-    return "🎵 Coldplay, Ed Sheeran, Arijit Singh, Imagine Dragons, Lo-fi beats!";
-  }
-
-  if (input.includes("fact")) {
-    return "📚 Octopuses have 3 hearts ❤️ | Honey never spoils | Sharks predate trees 🦈";
-  }
-
-  return "🤖 I’m DadBot Final Boss — try joke, recipe, travel, music, fact, or birthday 🎉";
-}
-
-// =========================
-// 🔊 VOICE OUTPUT
-// =========================
-function speak(text) {
-  const msg = new SpeechSynthesisUtterance(text);
-  msg.rate = 1;
-  speechSynthesis.speak(msg);
-}
-
-// =========================
-// 🎤 VOICE INPUT
-// =========================
-function startVoice() {
-  const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-  rec.start();
-
-  rec.onresult = (e) => {
-    const text = e.results[0][0].transcript;
-    addMsg("You: " + text, "user");
-    const reply = brain(text);
-    addMsg("🤖 DadBot: " + reply, "bot");
-    speak(reply);
+/* ---------------- CLEAR CHAT ---------------- */
+if (clearBtn) {
+  clearBtn.onclick = () => {
+    messages = [];
+    chat.innerHTML = "";
   };
 }
 
-// =========================
-// 🎊 EFFECTS
-// =========================
-function launchConfetti() {
-  for (let i = 0; i < 50; i++) {
-    const c = document.createElement("div");
-    c.className = "confetti";
-    c.style.left = Math.random() * 100 + "vw";
-    c.style.background = randomColor();
-    document.body.appendChild(c);
-    setTimeout(() => c.remove(), 3000);
+/* ---------------- SEND MESSAGE ---------------- */
+if (send) send.onclick = sendMessage;
+
+if (prompt) {
+  prompt.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") sendMessage();
+  });
+}
+
+async function sendMessage() {
+  const text = prompt.value.trim();
+  if (!text) return;
+
+  addMessage(text, "user");
+
+  messages.push({ role: "user", content: text });
+
+  prompt.value = "";
+
+  typing.style.display = "block";
+
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: messages.slice(-6)
+      })
+    });
+
+    const data = await res.json();
+
+    typing.style.display = "none";
+
+    const reply = data?.reply || "No response";
+
+    addMessage(reply, "bot");
+
+    messages.push({ role: "assistant", content: reply });
+
+  } catch (err) {
+    typing.style.display = "none";
+    addMessage("⚠️ Connection error", "bot");
   }
 }
 
-function launchBalloons() {
-  for (let i = 0; i < 20; i++) {
-    const b = document.createElement("div");
-    b.className = "balloon";
-    b.style.left = Math.random() * 100 + "vw";
-    b.style.background = randomColor();
-    document.body.appendChild(b);
-    setTimeout(() => b.remove(), 6000);
-  }
+/* ---------------- UI ---------------- */
+function addMessage(text, type) {
+  if (!chat) return;
+
+  const div = document.createElement("div");
+  div.className = "message " + type;
+  div.innerHTML = window.marked ? marked.parse(text) : text;
+
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
 }
 
-function randomColor() {
-  return ["#ff6b6b","#6c5ce7","#00b894","#fdcb6e"][Math.floor(Math.random()*4)];
-}
+/* ---------------- VOICE ---------------- */
+if (voiceBtn && "webkitSpeechRecognition" in window) {
+  const rec = new webkitSpeechRecognition();
+  rec.lang = "en-US";
 
-// =========================
-// 🎁 SECRET GIFT
-// =========================
-function gift() {
-  launchConfetti();
-  alert("🎁 Surprise! You are the best dad in the world ❤️");
-}
+  voiceBtn.onclick = () => rec.start();
 
-// =========================
-// 📸 GALLERY
-// =========================
-function loadGallery() {
-  const gallery = document.getElementById("gallery");
-  gallery.innerHTML = `
-    <img src="https://via.placeholder.com/120x120?text=Memory+1">
-    <img src="https://via.placeholder.com/120x120?text=Memory+2">
-    <img src="https://via.placeholder.com/120x120?text=Memory+3">
-  `;
+  rec.onresult = (e) => {
+    prompt.value = e.results[0][0].transcript;
+  };
 }

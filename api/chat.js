@@ -48,9 +48,9 @@ export default async function handler(req, res) {
           model: "openai/gpt-oss-20b",
           messages,
           temperature: 0.7,
-          // gpt-oss is a reasoning model: reasoning tokens count toward the
-          // completion limit, so keep effort low and leave enough headroom
-          // that long answers (travel plans, recipes) aren't truncated.
+          // Long answers (travel plans, recipes, explanations) measure
+          // ~1650-2100 completion tokens, so 3000 leaves headroom without
+          // truncating. Note the free tier is 8000 TPM overall.
           reasoning_effort: "low",
           max_completion_tokens: 3000
         })

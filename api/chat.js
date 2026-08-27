@@ -1,50 +1,82 @@
-import OpenAI from "openai";
-
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Only POST allowed" });
-  }
-
-  const { message } = req.body;
-
   try {
-    const response = await client.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content: `
-You are DadBot, a warm, funny, intelligent AI created as a birthday gift.
+    // Only allow POST
+    if (req.method !== "POST") {
+      return res.status(200).json({ reply: "DadBot ready 🤖" });
+    }
 
-Your personality:
-- Friendly and encouraging
-- Loves telling dad jokes
-- Gives vegetarian recipes
-- Creates detailed travel itineraries
-- Recommends music
-- Shares fascinating facts
-- Can answer general knowledge questions
-- Explains things simply
-- Celebrates birthdays enthusiastically
-- Always stays positive and respectful
+    // Get messages safely
+    let messages = req.body?.messages;
 
-When appropriate, use emojis to make conversations fun.
-          `,
-        },
+    // Ensure array
+    if (!Array.isArray(messages)) {
+      messages = [];
+    }
+
+    // Clean + validate messages (prevents Groq errors)
+    messages = messages
+      .map(m => ({
+        role: m?.role,
+        content: m?.content
+      }))
+      .filter(m =>
+        typeof m.role === "string" &&
+        typeof m.content === "string"
+      )
+      .slice(-6);
+
+    // IMPORTANT: prevent empty message crash
+    if (messages.length === 0) {
+      messages = [
         {
           role: "user",
-          content: message,
-        },
-      ],
-    });
+          content: "Hello"
+        }
+      ];
+    }
 
-    return res.status(200).json({ result: response.choices?.[0]?.message?.content || "" });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Something went wrong" });
+    // Call Groq API
+    const response = await fetch(
+      "https://api.groq.com/openai/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "openai/gpt-oss-20b",
+          messages,
+          temperature: 0.7,
+          // gpt-oss is a reasoning model: reasoning tokens count toward the
+          // completion limit, so keep effort low and leave headroom.
+          reasoning_effort: "low",
+          max_completion_tokens: 1024
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    // Handle API errors properly
+    if (!response.ok) {
+      return res.status(200).json({
+        reply: "❌ API Error: " + (data?.error?.message || "Unknown error")
+      });
+    }
+
+    // Extract reply safely
+    const reply =
+      data?.choices?.[0]?.message?.content ||
+      "No response";
+
+    return res.status(200).json({ reply });
+
+  } catch (err) {
+    console.error("DadBot API Error:", err);
+
+    return res.status(200).json({
+      reply: "Server error 😅"
+    });
   }
 }

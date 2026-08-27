@@ -49,9 +49,10 @@ export default async function handler(req, res) {
           messages,
           temperature: 0.7,
           // gpt-oss is a reasoning model: reasoning tokens count toward the
-          // completion limit, so keep effort low and leave headroom.
+          // completion limit, so keep effort low and leave enough headroom
+          // that long answers (travel plans, recipes) aren't truncated.
           reasoning_effort: "low",
-          max_completion_tokens: 1024
+          max_completion_tokens: 3000
         })
       }
     );
